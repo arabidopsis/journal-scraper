@@ -72,7 +72,7 @@ class Runner(ABC):
                 W = csv.writer(fp)
                 with tqdm(total=len(todo)) as pbar:
                     for papers in batched(todo, self.batch_size):
-                        for paper, status in self.batch_worker(papers, tqdm):
+                        for paper, status in self.batch_worker(papers, pbar):
                             W.writerow([paper.pmid, status])
                             fp.flush()
                         pbar.update(len(papers))

@@ -131,9 +131,9 @@ dmypy.json
 
 /*.csv
 .ipynb_checkpoints/
-scifeeder-data/*
+journals-cache/*
 /.venv
 .~lock*
-/sciconfig.toml
+/jconfig.toml
 /mycache
 /scache
