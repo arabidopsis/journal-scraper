@@ -17,7 +17,7 @@ from html_to_markdown import convert_to_markdown
 if TYPE_CHECKING:
     from .issn import Location
 
-logger = logging.getLogger("scifeeder")
+logger = logging.getLogger("journal_scraper")
 
 MD: TypeAlias = Literal["markdown", "pmarkdown", "html", "phtml", "text"]
 

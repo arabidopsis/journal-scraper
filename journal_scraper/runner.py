@@ -32,6 +32,10 @@ class Runner(ABC):
         self.batch_size = batch_size
         self.sleep = sleep
         self.cache_dir = cache_dir
+        self.init()
+
+    def init(self) -> None:
+        pass
 
     def start(self) -> None:
         pass

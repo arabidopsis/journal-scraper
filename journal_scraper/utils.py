@@ -5,6 +5,7 @@ import os
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
+from types import ModuleType
 from typing import Iterator
 
 from . import config as Config
@@ -81,3 +82,42 @@ def getconfig() -> UserConfig:
 
 def data_dir() -> str:
     return getconfig().data_dir
+
+
+def has_package(package: str) -> bool:
+    return get_package(package) is not None
+
+
+def get_package(package: str) -> ModuleType | None:
+    import importlib
+
+    try:
+        return importlib.import_module(package)
+
+    except ModuleNotFoundError:
+        return None
+
+
+def check_imports(*imports: str, exit: bool = True) -> bool:
+    import sys
+    import click
+
+    missing = set()
+    for i in imports:
+        if not has_package(i):
+            missing.add(i)
+    if missing:
+
+        m = " ".join(missing)
+        if "undetected_chromedriver" in missing:
+            m = "setuptools " + m
+        click.secho(
+            f"Missing packages! Please `pip install {m}`",
+            fg="yellow",
+            bold=True,
+            err=True,
+        )
+        if exit:
+            sys.exit(1)
+        return False
+    return True

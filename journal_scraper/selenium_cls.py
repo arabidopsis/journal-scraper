@@ -19,6 +19,7 @@ from .runner import Runner
 from .soup import logger
 from .soup import MD
 from .soup import Soup
+from .utils import check_imports
 from .utils import getconfig
 
 
@@ -218,6 +219,9 @@ class SeleniumRunner(Runner):
             Cache(self.cache_dir) if self.cache_dir else Cache(getconfig().data_dir)
         )
 
+    def init(self) -> None:
+        check_imports("undetected_chromedriver", "selenium_stealth")
+
     def create_driver(self):
         return StealthSelenium(headless=True)
 
@@ -235,7 +239,7 @@ class SeleniumRunner(Runner):
                 tqdm.write("retry....")
                 html = self.web.fetch_html(paper.doi, ISSN_MAP[paper.issn])
             if html is None:
-                retval = "cc"
+                retval = "cc"  # cloudflare challenge
             elif not html:
                 retval = "timeout"
             else:

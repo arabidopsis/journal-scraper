@@ -40,7 +40,7 @@ def cli():
 @click.option(
     "--col",
     default=0,
-    help="column in file that contains the pubmed ID",
+    help="column in pubmed_csv file that contains the pubmed ID",
     show_default=True,
 )
 @click.option(
@@ -52,7 +52,7 @@ def cli():
 )
 @click.option(
     "--sleep",
-    default=3.0,
+    default=1.0,
     help="wait sleep seconds between requests",
     show_default=True,
 )
@@ -123,13 +123,16 @@ blocked from the NCBI site.""",
 def runner(papers_csv: str) -> None:
     """Grab HTML pages from Journals"""
     import logging
+    from .utils import check_imports
+
+    check_imports("selenium", "undetected_chromedriver", "selenium_stealth")
     from .selenium_cls import SeleniumRunner
 
-    logger = logging.getLogger("scifeeder")
+    logger = logging.getLogger("journal_scraper")
     logger.setLevel(logging.WARNING)
 
     r = SeleniumRunner(papers_csv)
-    r.run()
+    r.run(notebook=False)
 
 
 if __name__ == "__main__":
