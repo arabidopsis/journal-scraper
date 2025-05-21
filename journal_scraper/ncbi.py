@@ -17,6 +17,7 @@ import requests
 from lxml import etree
 
 from .config import USER_AGENT
+from .runner import Runner
 from .soup import Soup
 from .types import Location
 from .types import NCBIPaper
@@ -26,6 +27,8 @@ from .utils import read_pubmed_csv
 if TYPE_CHECKING:
     from requests import Session
     from .soup import MD
+    from .types import Paper
+    from tqdm import tqdm
 
 EFETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 
@@ -293,3 +296,30 @@ class NCBI(Soup):
         if not html:
             return None
         return cls(html, format, **kwargs)
+
+
+class PMCRunner(Runner):
+
+    session: requests.Session
+
+    def init(self) -> None:
+        super().init()
+        self.session = requests.Session()
+
+    def ok(self, paper: Paper) -> bool:
+        return bool(paper.pmcid)
+
+    def work(self, paper: Paper, tqdm: tqdm) -> str:
+        assert (
+            paper.pmcid is not None
+            and self.cache is not None
+            and self.session is not None
+        )
+        ncbi = NCBI.from_pmcid(paper.pmcid, self.session)
+        if ncbi is None:
+            return "missing"
+        html = ncbi.html()
+        if not html:
+            return "failed"
+        self.cache.save_ncbi(paper, html)
+        return "ok"

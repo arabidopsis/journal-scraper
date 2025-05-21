@@ -137,3 +137,4 @@ journals-cache/*
 /jconfig.toml
 /mycache
 /scache
+/*.done

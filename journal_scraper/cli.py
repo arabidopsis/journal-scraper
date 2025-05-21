@@ -120,8 +120,8 @@ blocked from the NCBI site.""",
     "papers_csv",
     type=click.Path(dir_okay=False, exists=True, file_okay=True),
 )
-def runner(papers_csv: str) -> None:
-    """Grab HTML pages from Journals"""
+def selenium(papers_csv: str) -> None:
+    """Grab HTML pages from Journals using selenium"""
     import logging
     from .utils import check_imports
 
@@ -132,6 +132,29 @@ def runner(papers_csv: str) -> None:
     logger.setLevel(logging.WARNING)
 
     r = SeleniumRunner(papers_csv)
+    r.run(notebook=False)
+
+
+@cli.command()
+@click.option(
+    "--sleep",
+    default=1.0,
+    help="wait sleep seconds between requests",
+    show_default=True,
+)
+@click.argument(
+    "papers_csv",
+    type=click.Path(dir_okay=False, exists=True, file_okay=True),
+)
+@click.argument(
+    "cache_dir",
+    type=click.Path(dir_okay=True, file_okay=False),
+)
+def pmc(papers_csv: str, cache_dir: str, sleep: float) -> None:
+    """Grab any PMC pages from NCBI"""
+    from .ncbi import PMCRunner
+
+    r = PMCRunner(papers_csv, sleep=sleep, cache_dir=cache_dir)
     r.run(notebook=False)
 
 

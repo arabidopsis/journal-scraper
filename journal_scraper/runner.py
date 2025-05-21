@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Iterator
 from typing import TYPE_CHECKING
 
+from .cache import Cache
+from .issn import ISSN_MAP
 from .utils import read_papers_csv
 
 if TYPE_CHECKING:
@@ -17,12 +19,15 @@ if TYPE_CHECKING:
 
 
 class Runner(ABC):
+    cache: Cache | None
+
     def __init__(
         self,
         papers_csv: str | Path,
+        *,
         done_csv: str | Path | None = None,
         batch_size: int = 1,
-        sleep=0.0,
+        sleep: float = 0.0,
         cache_dir: str | Path | None = None,
     ):
         self.papers_csv = Path(papers_csv)
@@ -31,7 +36,11 @@ class Runner(ABC):
         self.done_csv = Path(done_csv)
         self.batch_size = batch_size
         self.sleep = sleep
-        self.cache_dir = cache_dir
+        # self.cache_dir = cache_dir
+        if cache_dir is not None:
+            self.cache = Cache(cache_dir)
+        else:
+            self.cache = None
         self.init()
 
     def init(self) -> None:
@@ -52,8 +61,10 @@ class Runner(ABC):
             done = set()
         return done
 
+    def ok(self, paper: Paper) -> bool:
+        return bool(paper.doi and paper.issn and paper.issn in ISSN_MAP)
+
     def run(self, notebook: bool = False):
-        from .issn import ISSN_MAP
 
         if notebook:
             from tqdm.notebook import tqdm
@@ -65,10 +76,7 @@ class Runner(ABC):
         todo = [
             paper
             for paper in read_papers_csv(self.papers_csv)
-            if paper.pmid not in done
-            and paper.doi
-            and paper.issn
-            and paper.issn in ISSN_MAP
+            if paper.pmid not in done and self.ok(paper)
         ]
         self.start()
         try:
