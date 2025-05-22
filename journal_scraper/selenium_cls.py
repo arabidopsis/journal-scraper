@@ -219,7 +219,7 @@ class SeleniumRunner(Runner):
             Cache(self.cache_dir) if self.cache_dir else Cache(getconfig().data_dir)
         )
 
-    def init(self) -> None:
+    def init(self, **kwargs) -> None:
         check_imports("undetected_chromedriver", "selenium_stealth")
 
     def create_driver(self):

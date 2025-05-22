@@ -4,9 +4,13 @@ import logging
 from io import StringIO
 from pathlib import Path
 from typing import Any
+from typing import Callable
+from typing import Iterable
 from typing import Literal
 from typing import TYPE_CHECKING
 from typing import TypeAlias
+from typing import TypedDict
+from typing import Unpack
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
@@ -20,6 +24,28 @@ if TYPE_CHECKING:
 logger = logging.getLogger("journal_scraper")
 
 MD: TypeAlias = Literal["markdown", "pmarkdown", "html", "phtml", "text"]
+
+
+class HTML2MD(TypedDict, total=False):
+    heading_style: str
+    autolinks: bool
+    bullets: str
+    code_language: str
+    code_language_callback: Callable[[Any], str] | None
+    convert: str | Iterable[str] | None
+    convert_as_inline: bool
+    default_title: bool
+    escape_asterisks: bool
+    escape_misc: bool
+    escape_underscores: bool
+    keep_inline_images_in: Iterable[str] | None
+    newline_style: Literal["spaces", "backslash"]
+    strip: str | Iterable[str] | None
+    strong_em_symbol: Literal["*", "_"]
+    sub_symbol: str
+    sup_symbol: str
+    wrap: bool
+    wrap_width: int
 
 
 def custom_div_converter(
@@ -51,7 +77,7 @@ MD_STYLE = dict(
 class Soup:
     PARSER = "lxml"
 
-    def __init__(self, format: MD = "markdown", **kwargs: dict[str, Any]):
+    def __init__(self, format: MD = "markdown", **kwargs: Unpack[HTML2MD]):
         self.format = format
         self.md_style = {**MD_STYLE, **kwargs}
 

@@ -43,8 +43,9 @@ def epmc(
     resp = session.get(url)
     if resp.status_code == 404:
         return None
-    resp.raise_for_status()
-
+    # resp.raise_for_status()
+    if resp.status_code != 200:
+        return b""
     # get rid of <?ConverterInfo.XSLTName jp2nlmx2.xml?> it breaks iterparse!
     return PE.sub(b"", resp.content) if strip_pi else resp.content
 

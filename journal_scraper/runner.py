@@ -6,6 +6,7 @@ from abc import ABC
 from abc import abstractmethod
 from itertools import batched
 from pathlib import Path
+from typing import Any
 from typing import Iterator
 from typing import TYPE_CHECKING
 
@@ -29,6 +30,7 @@ class Runner(ABC):
         batch_size: int = 1,
         sleep: float = 0.0,
         cache_dir: str | Path | None = None,
+        **kwargs: Any,
     ):
         self.papers_csv = Path(papers_csv)
         if done_csv is None:
@@ -41,9 +43,9 @@ class Runner(ABC):
             self.cache = Cache(cache_dir)
         else:
             self.cache = None
-        self.init()
+        self.init(**kwargs)
 
-    def init(self) -> None:
+    def init(self, **kwargs: Any) -> None:
         pass
 
     def start(self) -> None:

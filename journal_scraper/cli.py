@@ -137,6 +137,8 @@ def selenium(papers_csv: str) -> None:
 
 
 @cli.command()
+@click.option("--email", help="your email address for NCBI E-Utilities")
+@click.option("--api-key", help="your NCBI API_KEY")
 @click.option(
     "--sleep",
     default=1.0,
@@ -151,11 +153,23 @@ def selenium(papers_csv: str) -> None:
     "cache_dir",
     type=click.Path(dir_okay=True, file_okay=False),
 )
-def pmc(papers_csv: str, cache_dir: str, sleep: float) -> None:
+def pmc(
+    papers_csv: str,
+    cache_dir: str,
+    sleep: float,
+    email: str | None,
+    api_key: str | None,
+) -> None:
     """Grab any PMC pages from NCBI"""
     from .ncbi import PMCRunner
 
-    r = PMCRunner(papers_csv, sleep=sleep, cache_dir=cache_dir)
+    r = PMCRunner(
+        papers_csv,
+        sleep=sleep,
+        cache_dir=cache_dir,
+        email=email,
+        api_key=api_key,
+    )
     r.run(notebook=False)
 
 

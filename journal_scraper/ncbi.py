@@ -61,7 +61,8 @@ def ncbi_epmc(
     )
     if resp.status_code == 404:
         return None
-    resp.raise_for_status()
+    if resp.status_code != 200:
+        return ""
     return resp.text
 
 
@@ -266,7 +267,7 @@ NCBI_CSS = Location(
 
 class NCBI(Soup):
 
-    def __init__(self, html: str, format: MD = "markdown", **kwargs: dict[str, Any]):
+    def __init__(self, html: str, format: MD = "markdown", **kwargs: Any):
         super().__init__(format, **kwargs)
         self.soup = self.soupify(html)
 
@@ -301,9 +302,13 @@ class NCBI(Soup):
 class PMCRunner(Runner):
 
     session: requests.Session
+    email: str | None
+    api_key: str | None
 
-    def init(self) -> None:
-        super().init()
+    def init(self, **kwargs) -> None:
+        self.email = kwargs.pop("email", None)
+        self.api_key = kwargs.pop("api_key", None)
+        super().init(**kwargs)
         self.session = requests.Session()
 
     def ok(self, paper: Paper) -> bool:
@@ -315,7 +320,12 @@ class PMCRunner(Runner):
             and self.cache is not None
             and self.session is not None
         )
-        ncbi = NCBI.from_pmcid(paper.pmcid, self.session)
+        ncbi = NCBI.from_pmcid(
+            paper.pmcid,
+            self.session,
+            email=self.email,
+            api_key=self.api_key,
+        )
         if ncbi is None:
             return "missing"
         html = ncbi.html()
