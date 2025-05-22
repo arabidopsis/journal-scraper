@@ -63,7 +63,7 @@ class Cache:
         with path.open("rt", encoding="utf-8") as fp:
             return fp.read(), typ
 
-    def save_(self, paper: Paper, html, ff: FileFormat) -> None:
+    def save_(self, paper: Paper, html: str, ff: FileFormat) -> None:
         outdir = self.cache_dir / ff
         if not outdir.exists():
             outdir.mkdir(parents=True, exist_ok=True)

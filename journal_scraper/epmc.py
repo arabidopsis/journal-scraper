@@ -128,7 +128,7 @@ class EPMC:
         return article[0]
 
     def to_xml(self, pretty: bool = False) -> str:
-        return self.soup.prettify() if pretty else str(self.soup)
+        return str(self.soup.prettify()) if pretty else str(self.soup)
 
     def save_content(self, save: str | Path, pretty: bool = False) -> None:
         a = self.to_xml(pretty)
@@ -136,7 +136,7 @@ class EPMC:
             fp.write(a)
 
     def cull(self, article: Tag) -> Tag:
-        remove = list(self.REMOVE)
+        remove: list[str] = list(self.REMOVE)
         remove.extend(f"front > article-meta > {m}" for m in self.REMOVE_META)
         css = ",".join(remove)
 

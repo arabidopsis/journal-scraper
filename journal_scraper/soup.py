@@ -78,7 +78,7 @@ class Soup:
     PARSER = "lxml"
 
     def __init__(self, format: MD = "markdown", **kwargs: Unpack[HTML2MD]):
-        self.format = format
+        self.format: MD = format
         self.md_style = {**MD_STYLE, **kwargs}
 
     def soupify(self, html: str) -> BeautifulSoup:
@@ -106,17 +106,17 @@ class Soup:
             return convert_to_markdown(str(article), **self.md_style)
         if fmt == "pmarkdown":
             return convert_to_markdown(
-                article.prettify(),
+                str(article.prettify()),
                 **self.md_style,
             )
         if fmt == "html":
             return str(article)
         if fmt == "phtml":
-            return article.prettify()
+            return str(article.prettify())
         return article.get_text(" ")
 
     @classmethod
-    def save_html(self, html: str, path: Path) -> None:
+    def save_html(cls, html: str, path: Path) -> None:
         if not path.parent.exists():
             path.parent.mkdir(parents=True)
         with path.open("wt", encoding="utf8") as fp:
@@ -141,16 +141,16 @@ class Soup:
         URLS = ("https://", "http://")
 
         for a in soup.select("a"):
-            href = a.get("href")
+            href = str(a.get("href", ""))
 
             if href:
                 if not href.startswith(URLS):
                     a.attrs["href"] = add(href)
-            title = a.get("title")
+            title = str(a.get("title", ""))
             if title:
                 a.attrs["title"] = sanitize(title)
         for a in soup.select("img,script"):
-            src = a.get("src")
+            src = str(a.get("src", ""))
             if src:
                 if not src.startswith(URLS):
                     a.attrs["src"] = add(src)

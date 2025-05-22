@@ -49,7 +49,7 @@ def ncbi_epmc(
     url = HTML.format(pmcid=pmcid)
     if session is None:
         session = requests.Session()
-    params = {}
+    params: dict[str, str] = {}
     if email:
         params["email"] = email
     if api_key:
@@ -89,8 +89,9 @@ def fetchpubmed(
 def parse_xml(xml: bytes) -> Iterator[NCBIPaper]:
     """Parse NCBI Journal metadata into a dictionary."""
     ipt = BytesIO(xml)
-    tree = etree.parse(ipt)
+    tree = etree.parse(ipt)  #
     error = tree.getroot().tag
+    year = -1
     if error == "ERROR":  # no id
         return None
     for diva in tree.findall("PubmedArticle"):
@@ -250,7 +251,7 @@ def get_ncbi_metadata(
                 missing = [p for p in pmids if p not in batch]
                 if missing:
                     msg = ",".join(missing)
-                    pbar.write(click.style(f"missing: {msg}", fg="red"), bold=True)
+                    pbar.write(click.style(f"missing: {msg}", fg="red", bold=True))
                 # pbar.secho(f"{len(done)}/{len(todo)} done", fg="green")
                 if sleep:
                     time.sleep(sleep)  # be nice :)
@@ -269,7 +270,7 @@ class NCBI(Soup):
         self.soup = self.soupify(html)
 
     def html(self, pretty: bool = False) -> str:
-        return self.soup.prettify() if pretty else str(self.soup)
+        return str(self.soup.prettify()) if pretty else str(self.soup)
 
     def article(self, css: Location | None = None, fmt: MD | None = None) -> str:
         if css is None:
