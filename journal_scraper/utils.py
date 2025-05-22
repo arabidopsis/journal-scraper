@@ -59,7 +59,7 @@ class UserConfig:
     api_key: str | None = None
 
 
-_CONF = None
+_CONF: UserConfig | None = None
 
 
 def getconfig() -> UserConfig:

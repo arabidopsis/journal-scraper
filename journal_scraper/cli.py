@@ -34,6 +34,7 @@ def cli():
 @click.option("--email", help="your email address for NCBI E-Utilities")
 @click.option("--api-key", help="your NCBI API_KEY")
 @click.option(
+    "-o",
     "--out",
     help=f'output CSV filename (will be appended to if exists). Defaults to "{getconfig().papers_csv}"',
     type=click.Path(dir_okay=False, file_okay=True),
@@ -118,7 +119,12 @@ blocked from the NCBI site.""",
     "papers_csv",
     type=click.Path(dir_okay=False, exists=True, file_okay=True),
 )
-def selenium(papers_csv: str) -> None:
+@click.argument(
+    "data_dir",
+    type=click.Path(dir_okay=True, file_okay=False),
+    required=False,
+)
+def selenium(papers_csv: str, data_dir: str | None) -> None:
     """Grab HTML pages from Journals using selenium"""
     import logging
     from .utils import check_imports
@@ -129,7 +135,7 @@ def selenium(papers_csv: str) -> None:
     logger = logging.getLogger("journal_scraper")
     logger.setLevel(logging.WARNING)
 
-    r = SeleniumRunner(papers_csv, data_dir=getconfig().data_dir)
+    r = SeleniumRunner(papers_csv, data_dir=data_dir or getconfig().data_dir)
     r.run(notebook=False)
 
 
@@ -149,7 +155,7 @@ def selenium(papers_csv: str) -> None:
 @click.argument(
     "data_dir",
     type=click.Path(dir_okay=True, file_okay=False),
-    requred=False,
+    required=False,
 )
 def pmc(
     papers_csv: str,

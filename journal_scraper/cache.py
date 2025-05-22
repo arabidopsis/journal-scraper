@@ -25,13 +25,16 @@ class Cache:
             self.data_dir.mkdir(parents=True, exist_ok=True)
         self.gz = ".gz" if self.compressed else ""
 
+    def to_ext(self, ff: FileFormat | str) -> str:
+        return "xml" if ff == "xml" else "html"
+
     def locate(self, paper: Paper) -> tuple[Path | None, FileFormat]:
 
-        for typ in ["html", "xml", "ncbi"]:
-            ext = "xml" if typ == "xml" else "html"
-            outdir = self.data_dir / typ / f"{paper.pmid}.{ext}{self.gz}"
+        for ff in ["html", "xml", "ncbi"]:
+            ext = self.to_ext(ff)
+            outdir = self.data_dir / ff / f"{paper.pmid}.{ext}{self.gz}"
             if outdir.exists():
-                return outdir, cast(FileFormat, typ)
+                return outdir, cast(FileFormat, ff)
 
         return None, "html"
 
@@ -67,7 +70,7 @@ class Cache:
         outdir = self.data_dir / ff
         if not outdir.exists():
             outdir.mkdir(parents=True, exist_ok=True)
-        ext = "xml" if ff == "xml" else "html"
+        ext = self.to_ext(ff)
         path = outdir / f"{paper.pmid}.{ext}{self.gz}"
         if self.compressed:
             with gzip.open(path, "wt", encoding="utf8") as fp:
@@ -78,7 +81,7 @@ class Cache:
     def fetch_(self, paper: Paper, ff: FileFormat) -> str | None:
 
         outdir = self.data_dir / ff
-        ext = "xml" if ff == "xml" else "html"
+        ext = self.to_ext(ff)
         path = outdir / f"{paper.pmid}.{ext}{self.gz}"
         if not path.exists():
             return None
@@ -88,8 +91,26 @@ class Cache:
         with path.open("rt", encoding="utf8") as fp:
             return fp.read()
 
-    def fetchall(self, papers: Sequence[Paper]) -> Iterator[tuple[str, FileFormat]]:
+    def fetchif(self, papers: Sequence[Paper]) -> Iterator[tuple[str, FileFormat]]:
         for paper in papers:
             s, ff = self.fetch(paper)
             if s is not None:
                 yield s, ff
+
+    def fetchall(
+        self,
+        ff: FileFormat | None = None,
+    ) -> Iterator[tuple[str, FileFormat]]:
+        d: FileFormat
+        for d in ["xml", "html", "ncbi"]:  # type: ignore
+            if ff and d != ff:
+                continue
+            directory = self.data_dir / d
+            ext = self.to_ext(d)
+            for path in directory.glob(f"*.{ext}{self.gz}"):
+                if self.compressed:
+                    with gzip.open(path, "rt", encoding="utf8") as fp:
+                        yield fp.read(), d
+                else:
+                    with path.open("rt", encoding="utf8") as fp:
+                        yield fp.read(), d

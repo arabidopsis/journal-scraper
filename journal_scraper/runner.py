@@ -98,11 +98,11 @@ class Runner(ABC):
     def batch_worker(
         self,
         batch: tuple[Paper, ...],
-        tqdm: tqdm,
+        progress: tqdm,
     ) -> Iterator[tuple[Paper, str]]:
         for paper in batch:
-            yield paper, self.work(paper, tqdm)
+            yield paper, self.work(paper, progress)
 
     @abstractmethod
-    def work(self, paper: Paper, tqdm: tqdm) -> str:
+    def work(self, paper: Paper, progress: tqdm) -> str:
         raise NotImplementedError

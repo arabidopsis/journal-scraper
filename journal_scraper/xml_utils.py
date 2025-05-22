@@ -336,7 +336,7 @@ class PMCEvents(Events):
         if pid == "pmcid":
             return (
                 f'{pid}: <a target="xref" class="{name} {pid}"'
-                f' href="https://ncbi.nlm.nih.gov/pmc/articles/PMC{elem.text}">'
+                f' href="https://ncbi.nlm.nih.gov/pmc/articles/{elem.text}">'
             )
 
         return f'{pid}: <a target="xref" class="{name} {pid}" href="#{elem.text}">'

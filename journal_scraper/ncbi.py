@@ -312,7 +312,7 @@ class PMCRunner(Runner):
     def ok(self, paper: Paper) -> bool:
         return bool(paper.pmcid)
 
-    def work(self, paper: Paper, tqdm: tqdm) -> str:
+    def work(self, paper: Paper, progress: tqdm) -> str:
         assert (
             paper.pmcid is not None
             and self.cache is not None
@@ -329,5 +329,6 @@ class PMCRunner(Runner):
         html = ncbi.html()
         if not html:
             return "failed"
-        self.cache.save_ncbi(paper, html)
+        if self.cache is not None:
+            self.cache.save_ncbi(paper, html)
         return "ok"

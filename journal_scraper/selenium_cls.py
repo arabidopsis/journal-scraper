@@ -23,6 +23,7 @@ from .utils import check_imports
 
 if TYPE_CHECKING:
     from .issn import Location
+    from .types import Paper
     from selenium.webdriver.remote.webdriver import WebDriver
     from tqdm import tqdm
 
@@ -222,7 +223,7 @@ class SeleniumRunner(Runner):
     def create_driver(self):
         return StealthSelenium(headless=True)
 
-    def work(self, paper, tqdm: tqdm) -> str:
+    def work(self, paper: Paper, progress: tqdm) -> str:
         tqdm.write(f"working... {paper.pmid}")
         if not paper.doi:
             return "nodoi"
