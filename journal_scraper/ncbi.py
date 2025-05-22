@@ -218,7 +218,7 @@ def get_ncbi_metadata(
     todo = [
         pmid for pmid in read_pubmed_csv(pubmeds_todo, pcol=pcol) if pmid not in done
     ]
-    click.secho(f"{len(done)} done. {len(todo)} todo", fg="blue", bold=True)
+    click.secho(f"{len(done)} done. {len(todo)} todo.", fg="blue", bold=True)
 
     with open(papers_csv, "a", encoding="utf8") as fp:
         W = csv.writer(fp)
@@ -252,7 +252,6 @@ def get_ncbi_metadata(
                 if missing:
                     msg = ",".join(missing)
                     pbar.write(click.style(f"missing: {msg}", fg="red", bold=True))
-                # pbar.secho(f"{len(done)}/{len(todo)} done", fg="green")
                 if sleep:
                     time.sleep(sleep)  # be nice :)
 

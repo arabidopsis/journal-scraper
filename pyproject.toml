@@ -32,16 +32,7 @@ all = [
 biolit = "journal_scraper.__main__:cli"
 
 [tool.hatch.build.targets.sdist]
-# won't ignore .gitignore
-exclude = [
-  "/.gitignore",
-  "/.pre-commit-config.yaml",
-  "/.pylintrc",
-  "/.isort.cfg",
-  "/.flake8",
-  "/selenium.ipynb",
-  "/uv.lock"
-]
+include = ['/journal_scraper']
 
 [build-system]
 requires = ["hatchling"]

@@ -248,8 +248,10 @@ class SeleniumRunner(Runner):
             tqdm.write(click.style(f"failed: {paper.pmid} {e}", fg="red", bold=True))
             retval = "failed"
         if retval == "ok":
-            retval = click.style(retval, fg="green", bold=True)
-        tqdm.write(retval)
+            d = click.style(retval, fg="green", bold=True)
+        else:
+            d = retval
+        tqdm.write(d)
         return retval
 
     def end(self):
