@@ -7,7 +7,7 @@ from typing import IO
 from typing import Iterator
 
 from lxml import etree
-from lxml.etree import Element
+from lxml.etree import ElementBase as Element
 
 # from xml.etree import ElementTree as etree
 
@@ -264,7 +264,7 @@ class Events:
                         yield " "
                     else:
                         yield elem.tail
-                elem.clear()
+                elem.clear(keep_tail=False)
             else:
                 raise RuntimeError(f"what event {e}?")
 

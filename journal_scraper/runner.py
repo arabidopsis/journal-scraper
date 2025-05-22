@@ -29,7 +29,7 @@ class Runner(ABC):
         done_csv: str | Path | None = None,
         batch_size: int = 1,
         sleep: float = 0.0,
-        cache_dir: str | Path | None = None,
+        data_dir: str | Path | None = None,
         **kwargs: Any,
     ):
         self.papers_csv = Path(papers_csv)
@@ -38,9 +38,9 @@ class Runner(ABC):
         self.done_csv = Path(done_csv)
         self.batch_size = batch_size
         self.sleep = sleep
-        # self.cache_dir = cache_dir
-        if cache_dir is not None:
-            self.cache = Cache(cache_dir)
+        # self.data_dir = data_dir
+        if data_dir is not None:
+            self.cache = Cache(data_dir)
         else:
             self.cache = None
         self.init(**kwargs)

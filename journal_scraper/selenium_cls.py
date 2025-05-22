@@ -13,14 +13,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from urllib3.exceptions import MaxRetryError
 from urllib3.exceptions import NewConnectionError
 
-from .cache import Cache
 from .issn import ISSN_MAP
 from .runner import Runner
 from .soup import logger
 from .soup import MD
 from .soup import Soup
 from .utils import check_imports
-from .utils import getconfig
 
 
 if TYPE_CHECKING:
@@ -33,7 +31,7 @@ if TYPE_CHECKING:
 # /selenium-headless-how-to-bypass-cloudflare-detection-using-selenium
 def get_service():
     from selenium.webdriver.chrome.service import Service
-    from webdriver_manager.chrome import ChromeDriverManager
+    from webdriver_manager.chrome import ChromeDriverManager  # type: ignore
 
     return Service(ChromeDriverManager().install())
 
@@ -63,6 +61,7 @@ def stealth_driver(headless: bool = True) -> WebDriver:
 
 
 class Selenium(Soup):
+    driver: WebDriver
 
     def __init__(
         self,
@@ -92,6 +91,7 @@ class Selenium(Soup):
     def wait(self) -> WebDriverWait:
         if self.wait_ is not None:
             return self.wait_
+        assert self.driver is not None
         self.wait_ = WebDriverWait(self.driver, self.timeout)
         return self.wait_
 
@@ -99,6 +99,7 @@ class Selenium(Soup):
         self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css)))
 
     def doi(self, doi_or_url: str, css: Location | None = None) -> str:
+        assert self.driver is not None
         if not doi_or_url.startswith(("https://", "http://")):
             doi_or_url = f"https://doi.org/{doi_or_url}"
         self.driver.get(doi_or_url)
@@ -160,7 +161,7 @@ class Selenium(Soup):
 
     def close(self):
         self.driver.close()  # or quit()?
-        self.driver = None
+        self.driver = None  # type: ignore
 
     def __del__(self):
         if self and self.driver is not None:
@@ -211,13 +212,9 @@ class StealthSelenium(Selenium):
 
 class SeleniumRunner(Runner):
     web: Selenium
-    cache: Cache
 
     def start(self):
         self.web = self.create_driver()
-        self.cache = (
-            Cache(self.cache_dir) if self.cache_dir else Cache(getconfig().data_dir)
-        )
 
     def init(self, **kwargs) -> None:
         check_imports("undetected_chromedriver", "selenium_stealth")
@@ -243,7 +240,8 @@ class SeleniumRunner(Runner):
             elif not html:
                 retval = "timeout"
             else:
-                self.cache.save_html(paper, html)
+                if self.cache is not None:
+                    self.cache.save_html(paper, html)
                 retval = "ok"
         except Exception as e:
             tqdm.write(click.style(f"failed: {paper.pmid} {e}", fg="red", bold=True))

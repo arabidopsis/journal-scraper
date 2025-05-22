@@ -129,7 +129,7 @@ def selenium(papers_csv: str) -> None:
     logger = logging.getLogger("journal_scraper")
     logger.setLevel(logging.WARNING)
 
-    r = SeleniumRunner(papers_csv)
+    r = SeleniumRunner(papers_csv, data_dir=getconfig().data_dir)
     r.run(notebook=False)
 
 
@@ -147,12 +147,13 @@ def selenium(papers_csv: str) -> None:
     type=click.Path(dir_okay=False, exists=True, file_okay=True),
 )
 @click.argument(
-    "cache_dir",
+    "data_dir",
     type=click.Path(dir_okay=True, file_okay=False),
+    requred=False,
 )
 def pmc(
     papers_csv: str,
-    cache_dir: str,
+    data_dir: str | None,
     sleep: float,
     email: str | None,
     api_key: str | None,
@@ -163,7 +164,7 @@ def pmc(
     r = PMCRunner(
         papers_csv,
         sleep=sleep,
-        cache_dir=cache_dir,
+        data_dir=data_dir or getconfig().data_dir,
         email=email,
         api_key=api_key,
     )

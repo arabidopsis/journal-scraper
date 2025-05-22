@@ -19,6 +19,8 @@ class Paper:
 
     @property
     def key(self):
+        if self.journal is None:
+            raise ValueError("no journal")
         return (
             self.journal.replace(" ", "")
             .replace(".", "")

@@ -18,18 +18,18 @@ FileFormat: TypeAlias = Literal["xml", "html", "ncbi"]
 
 class Cache:
 
-    def __init__(self, cache_dir: str | Path, compressed: bool = False):
-        self.cache_dir = Path(cache_dir)
+    def __init__(self, data_dir: str | Path, compressed: bool = False):
+        self.data_dir = Path(data_dir)
         self.compressed = compressed
-        if not self.cache_dir.exists():
-            self.cache_dir.mkdir(parents=True, exist_ok=True)
+        if not self.data_dir.exists():
+            self.data_dir.mkdir(parents=True, exist_ok=True)
         self.gz = ".gz" if self.compressed else ""
 
     def locate(self, paper: Paper) -> tuple[Path | None, FileFormat]:
 
         for typ in ["html", "xml", "ncbi"]:
             ext = "xml" if typ == "xml" else "html"
-            outdir = self.cache_dir / typ / f"{paper.pmid}.{ext}{self.gz}"
+            outdir = self.data_dir / typ / f"{paper.pmid}.{ext}{self.gz}"
             if outdir.exists():
                 return outdir, cast(FileFormat, typ)
 
@@ -64,7 +64,7 @@ class Cache:
             return fp.read(), typ
 
     def save_(self, paper: Paper, html: str, ff: FileFormat) -> None:
-        outdir = self.cache_dir / ff
+        outdir = self.data_dir / ff
         if not outdir.exists():
             outdir.mkdir(parents=True, exist_ok=True)
         ext = "xml" if ff == "xml" else "html"
@@ -77,7 +77,7 @@ class Cache:
 
     def fetch_(self, paper: Paper, ff: FileFormat) -> str | None:
 
-        outdir = self.cache_dir / ff
+        outdir = self.data_dir / ff
         ext = "xml" if ff == "xml" else "html"
         path = outdir / f"{paper.pmid}.{ext}{self.gz}"
         if not path.exists():

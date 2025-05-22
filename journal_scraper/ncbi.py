@@ -89,7 +89,7 @@ def fetchpubmed(
 def parse_xml(xml: bytes) -> Iterator[NCBIPaper]:
     """Parse NCBI Journal metadata into a dictionary."""
     ipt = BytesIO(xml)
-    tree = etree.parse(ipt)  #
+    tree = etree.parse(ipt)  # type: ignore
     error = tree.getroot().tag
     year = -1
     if error == "ERROR":  # no id
