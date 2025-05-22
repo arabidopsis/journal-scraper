@@ -197,7 +197,6 @@ def get_ncbi_metadata(
     *,
     email: str | None = None,
     api_key: str | None = None,
-    header: bool = True,
     pcol: int = 0,
     sleep: float = 0.2,
     batch_size: int = 10,
@@ -216,9 +215,7 @@ def get_ncbi_metadata(
         done = set()
 
     todo = [
-        pmid
-        for pmid in read_pubmed_csv(pubmeds_todo, header=header, pcol=pcol)
-        if pmid not in done
+        pmid for pmid in read_pubmed_csv(pubmeds_todo, pcol=pcol) if pmid not in done
     ]
     click.secho(f"{len(done)} done. {len(todo)} todo", fg="blue", bold=True)
 

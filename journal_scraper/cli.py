@@ -57,7 +57,6 @@ def cli():
     help="wait sleep seconds between requests",
     show_default=True,
 )
-@click.option("--noheader", is_flag=True, help="csvfile has no header")
 @click.argument(
     "pubmed_csv",
     type=click.Path(dir_okay=False, exists=True, file_okay=True),
@@ -67,7 +66,6 @@ def make_papers(
     out: str | None,
     email: str | None,
     api_key: str | None,
-    noheader: bool = False,
     col: int = 0,
     sleep: float = 0.37,
     batch_size: int = 10,
@@ -108,7 +106,6 @@ blocked from the NCBI site.""",
         pubmeds_todo=pubmed_csv,
         papers_csv=out,
         sleep=sleep,
-        header=not noheader,
         pcol=col,
         email=email,
         api_key=api_key,

@@ -39,17 +39,16 @@ def read_papers_csv(csvfile: str | Path) -> Iterator[Paper]:
 
 def read_pubmed_csv(
     csvfile: str | Path,
-    header: bool = True,
     pcol: int = 0,
 ) -> Iterator[str]:
     """File csvfile is a list of *all* pubmed IDs."""
     with open(csvfile, encoding="utf8") as fp:
         R = csv.reader(fp)
-        if header:
-            next(R)  # skip header # pylint: disable=stop-iteration-return
-        # print(header)
         for row in R:
-            yield row[pcol]
+            ret = row[pcol]
+            if not ret.isdigit():
+                continue
+            yield ret
 
 
 @dataclass(kw_only=True)
