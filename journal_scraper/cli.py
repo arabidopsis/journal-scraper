@@ -130,7 +130,7 @@ def selenium(papers_csv: str, data_dir: str | None) -> None:
     from .utils import check_imports
 
     check_imports("selenium", "undetected_chromedriver", "selenium_stealth")
-    from .selenium_cls import SeleniumRunner
+    from .tellurium import SeleniumRunner
 
     logger = logging.getLogger("journal_scraper")
     logger.setLevel(logging.WARNING)
