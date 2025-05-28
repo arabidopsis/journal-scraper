@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from .types import Paper
 
 FileFormat: TypeAlias = Literal["xml", "html", "ncbi"]
+FFSTR = ["xml", "html", "ncbi"]
 
 
 class Cache:

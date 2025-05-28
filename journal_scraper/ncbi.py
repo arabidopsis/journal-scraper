@@ -6,6 +6,7 @@ import re
 import time
 from io import BytesIO
 from itertools import batched
+from pathlib import Path
 from typing import Any
 from typing import Iterator
 from typing import Self
@@ -294,6 +295,16 @@ class NCBI(Soup):
         if not html:
             return None
         return cls(html, format, **kwargs)
+
+    @classmethod
+    def from_file(
+        cls,
+        path: Path,
+        format: MD = "markdown",
+        **kwargs: dict[str, Any],
+    ) -> Self:
+        with path.open("rt", encoding="utf8") as fp:
+            return cls(fp.read(), format, **kwargs)
 
 
 class PMCRunner(Runner):

@@ -62,7 +62,7 @@ def cli():
     "pubmed_csv",
     type=click.Path(dir_okay=False, exists=True, file_okay=True),
 )
-def make_papers(
+def fetch_metadata(
     pubmed_csv: str,
     out: str | None,
     email: str | None,
@@ -175,6 +175,39 @@ def pmc(
         api_key=api_key,
     )
     r.run(notebook=False)
+
+
+@cli.command()
+@click.argument(
+    "papers_csv",
+    type=click.Path(dir_okay=False, exists=True, file_okay=True),
+)
+@click.argument(
+    "outdir",
+    type=click.Path(dir_okay=True, file_okay=False),
+)
+@click.argument(
+    "data_dir",
+    type=click.Path(dir_okay=True, file_okay=False),
+    required=False,
+)
+def convert(
+    papers_csv: str,
+    outdir: str,
+    data_dir: str | None,
+) -> None:
+    """Turn HTML into markdown"""
+    from .converters import HTMLConverter
+
+    if data_dir is None:
+        data_dir = getconfig().data_dir
+
+    r = HTMLConverter(
+        papers_csv,
+        data_dir=data_dir,
+        outdir=outdir,
+    )
+    r.trun()
 
 
 if __name__ == "__main__":
