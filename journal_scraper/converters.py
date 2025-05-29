@@ -15,15 +15,17 @@ class HTMLConverter(Converter):
         papers_csv: str | Path,
         data_dir: str | Path,
         outdir: str | Path,
+        small: int = 0,
         **kwargs: Any,
     ):
         super().__init__(papers_csv, data_dir, **kwargs)
         self.od = Path(outdir)
+        self.small = small
 
     def start(self):
         self.od.mkdir(parents=True, exist_ok=True)
 
-    def work(self, paper, path, ff, tqdm=None):
+    def work(self, paper, path, ff, progress=None):
         if ff == "html" and paper.issn not in ISSN_MAP:
             return
         if ff in {"ncbi", "html"}:
@@ -33,9 +35,10 @@ class HTMLConverter(Converter):
             a = ncbi.article(css=css)
             a = a.strip()
             if a:
-                with (self.od / f"{paper.pmid}.md").open("wt", encoding="utf8") as fp:
+                out = self.od / f"{paper.pmid}.md"
+                with out.open("wt", encoding="utf8") as fp:
                     fp.write(a)
 
             # print(paper.pmid, a)
-            if tqdm and len(a) < 2000:
-                tqdm.write(f"{paper.pmid} is small [{len(a)}]")
+            if progress and len(a) < self.small:
+                progress.write(f"{paper.pmid} is small [{len(a)}]")

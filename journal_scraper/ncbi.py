@@ -308,6 +308,7 @@ class NCBI(Soup):
 
 
 class PMCRunner(Runner):
+    KEYS = ["ok", "toosmall", "missing", "failed"]
 
     session: requests.Session
     email: str | None
@@ -323,11 +324,7 @@ class PMCRunner(Runner):
         return bool(paper.pmcid)
 
     def work(self, paper: Paper, progress: tqdm) -> str:
-        assert (
-            paper.pmcid is not None
-            and self.cache is not None
-            and self.session is not None
-        )
+        assert paper.pmcid is not None and self.session is not None
         ncbi = NCBI.from_pmcid(
             paper.pmcid,
             self.session,
@@ -339,6 +336,9 @@ class PMCRunner(Runner):
         html = ncbi.html()
         if not html:
             return "failed"
+        retval = "ok"
+        if len(html) < self.small:
+            retval = "toosmall"
         if self.cache is not None:
             self.cache.save_ncbi(paper, html)
-        return "ok"
+        return retval

@@ -286,14 +286,17 @@ class PMCEvents(Events):
 
     def start_xref(self, elem: Element) -> str:
         rid = elem.attrib["rid"]
+        assert not isinstance(rid, bytes)
         return f'<a class="xref" href="#{rid}">'
 
     def start_ref(self, elem: Element) -> str:
         rid = elem.attrib["id"]
+        assert not isinstance(rid, bytes)
         return f'<li class="ref" id="{rid}">'
 
     def start_fig(self, elem: Element) -> str:
         rid = elem.attrib["id"]
+        assert not isinstance(rid, bytes)
         return f'<figure class="fig" id="{rid}">'
 
     def start_article_id(self, elem: Element) -> str:
@@ -303,6 +306,9 @@ class PMCEvents(Events):
         return "</a>"
 
     def start_object_id(self, elem: Element) -> str:
+        if not elem.text:
+            return '<a target="xref" class="object-id">'
+
         if not elem.text.startswith(("https://", "http://")):
             href = "https://dx.doi.org/" + elem.text
         else:

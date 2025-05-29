@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
 
 class Runner(ABC):
+    KEYS: list[str]
     cache: Cache | None
 
     def __init__(
@@ -33,6 +34,7 @@ class Runner(ABC):
         batch_size: int = 1,
         sleep: float = 0.0,
         data_dir: str | Path | None = None,
+        small: int = 0,
         **kwargs: Any,
     ):
         self.papers_csv = Path(papers_csv)
@@ -46,6 +48,7 @@ class Runner(ABC):
             self.cache = Cache(data_dir)
         else:
             self.cache = None
+        self.small = small
         self.init(**kwargs)
 
     def init(self, **kwargs: Any) -> None:
@@ -197,6 +200,6 @@ class Converter(ABC):
         paper: Paper,
         path: Path,
         ff: FileFormat,
-        tqdm: tqdm | None = None,
+        progress: tqdm | None = None,
     ) -> None:
         raise NotImplementedError

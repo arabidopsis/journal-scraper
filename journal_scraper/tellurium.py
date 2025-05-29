@@ -212,6 +212,7 @@ class StealthSelenium(Selenium):
 
 
 class SeleniumRunner(Runner):
+    KEYS = ["ok", "cc", "timeout", "failed", "nodoi", "noissn", "toosmall"]
     web: Selenium
 
     def start(self):
@@ -240,18 +241,24 @@ class SeleniumRunner(Runner):
                 retval = "cc"  # cloudflare challenge
             elif not html:
                 retval = "timeout"
+            elif len(html) < self.small:
+                retval = "toosmall"
             else:
+                retval = "ok"
+
+            if retval in {"ok", "toosmall"} and html:
                 if self.cache is not None:
                     self.cache.save_html(paper, html)
-                retval = "ok"
         except Exception as e:
             tqdm.write(click.style(f"failed: {paper.pmid} {e}", fg="red", bold=True))
             retval = "failed"
-        if retval == "ok":
-            d = click.style(retval, fg="green", bold=True)
-        else:
-            d = retval
-        tqdm.write(d)
+        if retval != "ok" and retval != "failed":
+            d = click.style(
+                retval,
+                fg="yellow" if retval == "toosmall" else "red",
+                bold=True,
+            )
+            tqdm.write(d)
         return retval
 
     def end(self):

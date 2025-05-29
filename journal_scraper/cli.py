@@ -178,6 +178,12 @@ def pmc(
 
 
 @cli.command()
+@click.option(
+    "--small",
+    default=0,
+    help="mark output markdown as small",
+    show_default=True,
+)
 @click.argument(
     "papers_csv",
     type=click.Path(dir_okay=False, exists=True, file_okay=True),
@@ -195,8 +201,9 @@ def convert(
     papers_csv: str,
     outdir: str,
     data_dir: str | None,
+    small: int,
 ) -> None:
-    """Turn HTML into markdown"""
+    """Turn HTML downloads into markdown"""
     from .converters import HTMLConverter
 
     if data_dir is None:
@@ -206,6 +213,7 @@ def convert(
         papers_csv,
         data_dir=data_dir,
         outdir=outdir,
+        small=small,
     )
     r.trun()
 
